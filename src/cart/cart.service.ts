@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DiscountService } from '../discount/discount.service';
 import { ProductService } from '../product/product.service';
-import { CartCheckout } from './dto/cart-checkout.dto';
+import { CartCheckoutDto } from './dto/cart-checkout.dto';
 import { CartProductCheckout } from './dto/cart-product-checkout.dto';
 import { CartCheckoutResponse } from './interface/cart-checkout-response.interface';
 import { CartProduct } from './interface/cart-product.interface';
@@ -15,7 +15,7 @@ export class CartService {
     private readonly discountService: DiscountService,
   ) {}
 
-  async checkout(dto: CartCheckout) {
+  async checkout(dto: CartCheckoutDto): Promise<CartCheckoutResponse> {
     const cartResponse: CartCheckoutResponse = {
       total_amount: 0,
       total_amount_with_discount: 0,

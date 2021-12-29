@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsNotEmpty, ValidateNested } from 'class-validator';
 import { CartProductCheckout } from './cart-product-checkout.dto';
 
-export class CartCheckout {
+export class CartCheckoutDto {
   @IsArray({ message: 'O elemento products deve ser do tipo Array' })
   @IsNotEmpty({
     message: 'Favor informar o elemento products no corpo da requisição',
