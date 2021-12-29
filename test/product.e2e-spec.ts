@@ -44,7 +44,7 @@ describe('ProductController (e2e)', () => {
       .expect(productService.findAll());
   });
 
-  it('product/:id (GET)', () => {
+  it('/product/:id (GET)', () => {
     const id = 1;
     return request(app.getHttpServer())
       .get(`/product/${id}`)
