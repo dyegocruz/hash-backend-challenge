@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { DateTime } from 'luxon';
 import { DiscountService } from '../discount/discount.service';
 import { ProductService } from '../product/product.service';
 import { CartCheckoutDto } from './dto/cart-checkout.dto';
@@ -13,16 +15,19 @@ export class CartService {
   constructor(
     private readonly productService: ProductService,
     private readonly discountService: DiscountService,
+    private readonly configService: ConfigService,
   ) {}
 
   async checkout(dto: CartCheckoutDto): Promise<CartCheckoutResponse> {
-    const cartResponse: CartCheckoutResponse = {
+    let cartResponse: CartCheckoutResponse = {
       total_amount: 0,
       total_amount_with_discount: 0,
       total_discount: 0,
       products: [],
     };
-    return await this.treatCartProducts(cartResponse, dto.products);
+    cartResponse = await this.treatCartProducts(cartResponse, dto.products);
+    cartResponse = await this.treatBrackFriday(cartResponse);
+    return cartResponse;
   }
 
   async treatCartProducts(
@@ -32,7 +37,7 @@ export class CartService {
     for (const productDto of productDotList) {
       const product = this.productService.findOne(productDto.id);
 
-      if (product) {
+      if (product && !product.is_gift) {
         const productDiscountPercentage =
           await this.discountService.getProductDiscount(product.id);
         const discountValue = this.calcDiscountValue(
@@ -61,6 +66,36 @@ export class CartService {
         cartCheckout.total_discount += cartProduct.discount;
       }
     }
+    return cartCheckout;
+  }
+
+  async treatBrackFriday(
+    cartCheckout: CartCheckoutResponse,
+  ): Promise<CartCheckoutResponse> {
+    const blackFridayDate = DateTime.fromISO(
+      this.configService.get('DATE_BLACK_FRIDAY'),
+    );
+    const today = DateTime.now();
+
+    if (blackFridayDate.hasSame(today, 'day')) {
+      const productGift = await this.productService.findOneGift();
+      if (productGift) {
+        const cartProductGift: CartProduct = {
+          id: productGift.id,
+          quantity: 1,
+          discount: 0,
+          is_gift: productGift.is_gift,
+          total_amount: productGift.amount,
+          unit_amount: productGift.amount,
+        };
+        cartCheckout.products.push(cartProductGift);
+
+        // TODO - descomentar ao confirmar se o valor do produto de brinde deve ser somado ao valor total do carrinho
+        // cartCheckout.total_amount += cartProductGift.total_amount;
+        // cartCheckout.total_amount_with_discount += cartProductGift.total_amount;
+      }
+    }
+
     return cartCheckout;
   }
 
