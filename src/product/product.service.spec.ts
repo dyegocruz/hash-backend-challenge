@@ -51,4 +51,20 @@ describe('ProductService', () => {
       expect(service.findOne(id)).toBe(result);
     });
   });
+
+  describe('findOneGift', () => {
+    it('should return an object of product', () => {
+      const result = {
+        id: 6,
+        title: 'Produto de teste',
+        description: 'Desrição de teste do produto.',
+        amount: 15157,
+        is_gift: true,
+      };
+
+      jest.spyOn(service, 'findOneGift').mockImplementation(() => result);
+
+      expect(service.findOneGift()).toBe(result);
+    });
+  });
 });

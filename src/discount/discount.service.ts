@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const grpc = require('@grpc/grpc-js');
@@ -18,10 +19,13 @@ const discountProto = grpc.loadPackageDefinition(packageDefinition).discount;
 @Injectable()
 export class DiscountService {
   logger = new Logger(DiscountService.name);
+
+  constructor(private readonly configService: ConfigService) {}
+
   async getProductDiscount(productID: number): Promise<number> {
     return new Promise((resolve) => {
       const client = new discountProto.Discount(
-        'localhost:50051',
+        this.configService.get('GRPC_DISCOUNT_CONNECTION_URL'),
         grpc.credentials.createInsecure(),
       );
 

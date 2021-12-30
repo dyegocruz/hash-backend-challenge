@@ -1,3 +1,4 @@
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DiscountModule } from '../discount/discount.module';
 import { ProductModule } from '../product/product.module';
@@ -10,7 +11,7 @@ describe('CartController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ProductModule, DiscountModule],
+      imports: [ProductModule, DiscountModule, ConfigModule],
       controllers: [CartController],
       providers: [CartService],
     }).compile();

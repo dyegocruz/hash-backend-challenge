@@ -10,7 +10,11 @@ export class ProductService {
     return this.productRepository.getAll();
   }
 
-  findOne(id: number) {
+  findOne(id: number): Product {
     return this.productRepository.getOne(id);
+  }
+
+  findOneGift(): Product {
+    return this.productRepository.getOneGift();
   }
 }

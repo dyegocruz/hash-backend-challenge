@@ -5,10 +5,14 @@ import { products } from './product.db';
 @Injectable()
 export class ProductRepository {
   getAll(): Array<Product> {
-    return products;
+    return products.filter((product) => !product.is_gift);
   }
 
   getOne(id: number): Product {
     return products.find((product) => product.id == id);
+  }
+
+  getOneGift(): Product {
+    return products.find((product) => product.is_gift);
   }
 }
