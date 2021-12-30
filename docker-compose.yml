@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  api:
+    image: hash-backend-challenge:0.0.1
+    build:
+      context: .
+      args:
+        - NODE_ENV=${NODE_ENV}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 1024m
+        max-file: "3"
+        labels: "production_status"
+        env: "os"
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV}
